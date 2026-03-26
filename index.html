@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Organograma Editável</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/gojs/release/go.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f4f6f8;
+      color: #1f2d30;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 15px 30px;
+      background: #007e8a;
+      color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      flex-wrap: wrap;
+    }
+
+    header img {
+      height: 70px;
+    }
+
+    header h1 {
+      font-size: 24px;
+      margin: 0;
+      flex: 1;
+      min-width: 260px;
+      text-align: center;
+    }
+
+    #organograma {
+      width: 90%;
+      height: 600px;
+      margin: 30px auto 20px auto;
+      border: 1px solid #e5ebed;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .acoes {
+      width: 90%;
+      margin: 0 auto 20px auto;
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .acao-btn {
+      width: 220px;
+      height: 48px;
+      padding: 0 18px;
+      font-size: 15px;
+      font-weight: 700;
+      background: #007e8a;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 24px rgba(0, 95, 102, 0.14);
+      box-sizing: border-box;
+      white-space: nowrap;
+    }
+
+    .acao-btn:hover {
+      background: #005f66;
+    }
+
+    #baixarBtn {
+      display: block;
+      margin: 10px auto 30px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #007e8a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #baixarBtn:hover {
+      background: #005f66;
+    }
+
+    .card {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 360px;
+      background: linear-gradient(145deg, #ffffff, #edf8fa);
+      border: 1px solid rgba(0, 126, 138, 0.22);
+      border-radius: 24px;
+      padding: 22px;
+      color: #12373c;
+      box-shadow: 0 20px 45px rgba(0, 95, 102, 0.18);
+      z-index: 1000;
+      display: none;
+    }
+
+    .card-topo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .card-acoes {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .card-titulo {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      color: #005f66;
+      letter-spacing: 0.4px;
+    }
+
+    .card-fechar {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(0, 126, 138, 0.12);
+      color: #005f66;
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .card-fechar:hover {
+      background: rgba(0, 126, 138, 0.2);
+    }
+
+    .card-fechar:focus {
+      outline: 2px solid rgba(0, 126, 138, 0.35);
+      outline-offset: 2px;
+    }
+
+    .card-acao {
+      height: 34px;
+      padding: 0 12px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(0, 126, 138, 0.12);
+      color: #005f66;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .card-acao:hover {
+      background: rgba(0, 126, 138, 0.2);
+    }
+
+    .card-acao.salvar {
+      background: linear-gradient(135deg, #007e8a, #005f66);
+      color: #ffffff;
+    }
+
+    .card-acao.salvar:hover {
+      filter: brightness(1.05);
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .card-item {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(0, 126, 138, 0.08);
+      border: 1px solid rgba(0, 126, 138, 0.1);
+    }
+
+    .card-label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #007e8a;
+    }
+
+    .card-valor {
+      display: block;
+      font-size: 18px;
+      line-height: 1.35;
+      font-weight: 700;
+      color: #1f4f55;
+      word-break: break-word;
+    }
+
+    .card-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid rgba(0, 126, 138, 0.22);
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #1f4f55;
+      background: #ffffff;
+      box-sizing: border-box;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 41, 46, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      width: min(460px, 100%);
+      background: linear-gradient(180deg, #ffffff 0%, #eef9fa 100%);
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(0, 126, 138, 0.18);
+      overflow: hidden;
+      animation: modalEntrada 0.2s ease;
+    }
+
+    .modal-topo {
+      padding: 18px 22px 12px 22px;
+      background: linear-gradient(135deg, #007e8a, #00a7b5);
+      color: #fff;
+    }
+
+    .modal-topo h3 {
+      margin: 0;
+      font-size: 22px;
+      font-family: "Lilita One", sans-serif;
+      letter-spacing: 0.5px;
+      font-weight: normal;
+    }
+
+    .modal-conteudo {
+      padding: 24px 22px 12px 22px;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #254045;
+    }
+
+    .modal-acoes {
+      padding: 0 22px 22px 22px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      min-width: 120px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #007e8a, #005f66);
+      color: #fff;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0, 95, 102, 0.24);
+    }
+
+    .modal-btn:hover {
+      filter: brightness(1.05);
+    }
+
+    @keyframes modalEntrada {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo-verzani1.png" alt="Logo da Empresa">
+    <h1>ORGANOGRAMA CORPORATIVO</h1>
+  </header>
+
+  <div id="organograma"></div>
+
+  <div class="acoes">
+    <button id="novoNoBtn" class="acao-btn">Adicionar Cargo</button>
+    <button id="removerNoBtn" class="acao-btn">Remover Cargo</button>
+    <button id="baixarBtn" class="acao-btn">Baixar Organograma</button>
+  </div>
+  <div id="card" class="card"></div>
+  <div id="modalOverlay" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-topo">
+        <h3>Aviso</h3>
+      </div>
+      <div class="modal-conteudo" id="modalMensagem"></div>
+      <div class="modal-acoes">
+        <button id="modalOkBtn" class="modal-btn">Entendi</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function init() {
+      const $ = go.GraphObject.make;
+
+      const card = document.getElementById("card");
+      const modalOverlay = document.getElementById("modalOverlay");
+      const modalMensagem = document.getElementById("modalMensagem");
+      const modalOkBtn = document.getElementById("modalOkBtn");
+
+      let selectedKey = null;
+      let nextKey = 100;
+      let cardEditando = false;
+
+      const modelos = {
+        grande: [
+          { key: 1, level: 0 },
+          { key: 2, parent: 1, level: 1 },
+          { key: 3, parent: 1, level: 1 },
+          { key: 4, parent: 3, level: 2 },
+          { key: 5, parent: 3, level: 2 },
+          { key: 6, parent: 2, level: 2 },
+          { key: 7, parent: 2, level: 2 },
+          { key: 8, parent: 4, level: 3 },
+          { key: 9, parent: 5, level: 3 },
+          { key: 10, parent: 1, level: 1 },
+          { key: 11, parent: 10, level: 2 },
+          { key: 12, parent: 1, level: 1 },
+          { key: 13, parent: 12, level: 2 },
+          { key: 14, parent: 1, level: 1 },
+          { key: 15, parent: 14, level: 2 }
+        ]
+      };
+
+      const myDiagram = $(go.Diagram, "organograma", {
+        initialAutoScale: go.Diagram.None,
+        initialScale: 0.88,
+        layout: $(go.TreeLayout, { angle: 90, layerSpacing: 75, nodeSpacing: 24 }),
+        contentAlignment: go.Spot.TopCenter,
+        padding: new go.Margin(45, 0, 0, 0),
+        "undoManager.isEnabled": true
+      });
+
+      function criarModeloBase(template) {
+        return template.map(function(item) {
+          return {
+            key: item.key,
+            parent: item.parent,
+            level: typeof item.level === "number" ? item.level : 0,
+            name: "",
+            cargo: "",
+            secao: "",
+            departamento: ""
+          };
+        });
+      }
+
+      function salvarNodeData(nodeData, novosDados) {
+        myDiagram.startTransaction("editar no");
+        myDiagram.model.setDataProperty(nodeData, "name", novosDados.name.trim());
+        myDiagram.model.setDataProperty(nodeData, "cargo", novosDados.cargo.trim());
+        myDiagram.model.setDataProperty(nodeData, "secao", novosDados.secao.trim());
+        myDiagram.model.setDataProperty(nodeData, "departamento", novosDados.departamento.trim());
+        myDiagram.commitTransaction("editar no");
+      }
+
+      function atualizarCard(data) {
+        if (!data) {
+          card.style.display = "none";
+          return;
+        }
+
+        card.style.display = "block";
+        card.innerHTML =
+          '<div class="card-topo"><p class="card-titulo">Detalhes do cargo</p><div class="card-acoes"><button type="button" class="card-acao" id="editarCardBtn">Editar</button><button type="button" class="card-acao salvar" id="salvarCardInlineBtn">Salvar</button><button type="button" class="card-fechar" id="fecharCardBtn" aria-label="Fechar detalhes">x</button></div></div>' +
+          '<div class="card-grid">' +
+          '<div class="card-item"><span class="card-label">Nome</span>' + (cardEditando ? '<input id="cardNomeInput" class="card-input" type="text" value="' + (data.name || "") + '">' : '<span class="card-valor">' + (data.name || "Nao informado") + '</span>') + '</div>' +
+          '<div class="card-item"><span class="card-label">Cargo</span>' + (cardEditando ? '<input id="cardCargoInput" class="card-input" type="text" value="' + (data.cargo || "") + '">' : '<span class="card-valor">' + (data.cargo || "Nao informado") + '</span>') + '</div>' +
+          '<div class="card-item"><span class="card-label">Secao</span>' + (cardEditando ? '<input id="cardSecaoInput" class="card-input" type="text" value="' + (data.secao || "") + '">' : '<span class="card-valor">' + (data.secao || "Nao informada") + '</span>') + '</div>' +
+          '<div class="card-item"><span class="card-label">Departamento</span>' + (cardEditando ? '<input id="cardDepartamentoInput" class="card-input" type="text" value="' + (data.departamento || "") + '">' : '<span class="card-valor">' + (data.departamento || "Nao informado") + '</span>') + '</div>' +
+          '</div>';
+
+        document.getElementById("editarCardBtn").addEventListener("click", function() {
+          cardEditando = true;
+          atualizarCard(data);
+        });
+
+        document.getElementById("salvarCardInlineBtn").addEventListener("click", function() {
+          if (!selectedKey) {
+            return;
+          }
+
+          const nodeData = myDiagram.model.findNodeDataForKey(selectedKey);
+          if (!nodeData) {
+            return;
+          }
+
+          const novosDados = {
+            name: document.getElementById("cardNomeInput") ? document.getElementById("cardNomeInput").value : nodeData.name,
+            cargo: document.getElementById("cardCargoInput") ? document.getElementById("cardCargoInput").value : nodeData.cargo,
+            secao: document.getElementById("cardSecaoInput") ? document.getElementById("cardSecaoInput").value : nodeData.secao,
+            departamento: document.getElementById("cardDepartamentoInput") ? document.getElementById("cardDepartamentoInput").value : nodeData.departamento
+          };
+
+          salvarNodeData(nodeData, novosDados);
+          cardEditando = false;
+          atualizarCard(nodeData);
+        });
+
+        document.getElementById("fecharCardBtn").addEventListener("click", function() {
+          card.style.display = "none";
+          cardEditando = false;
+          myDiagram.clearSelection();
+        });
+      }
+
+      function preencherFormulario(data) {
+        selectedKey = data ? data.key : null;
+        cardEditando = false;
+      }
+
+      function mostrarModal(mensagem) {
+        modalMensagem.textContent = mensagem;
+        modalOverlay.classList.add("show");
+      }
+
+      function fecharModal() {
+        modalOverlay.classList.remove("show");
+      }
+
+      function estiloPorNivel(level) {
+        if (level === 0) {
+          return { width: 280, height: 120, fill: "#005f66", fontCargo: "bold 22px Arial", fontNome: "15px Arial", radius: 38 };
+        }
+
+        if (level === 1) {
+          return { width: 250, height: 110, fill: "#007e8a", fontCargo: "bold 19px Arial", fontNome: "14px Arial", radius: 32 };
+        }
+
+        if (level === 2) {
+          return { width: 220, height: 100, fill: "#29a7a8", fontCargo: "bold 17px Arial", fontNome: "13px Arial", radius: 28 };
+        }
+
+        return { width: 205, height: 92, fill: "#76d2c5", fontCargo: "bold 15px Arial", fontNome: "12px Arial", radius: 24 };
+      }
+
+      function aplicarEstadoNo(node) {
+        const shape = node.findObject("SHAPE");
+        if (!shape) {
+          return;
+        }
+
+        if (node.isSelected) {
+          shape.stroke = "#ffffff";
+          shape.strokeWidth = 4;
+          return;
+        }
+
+        if (node.isHighlighted) {
+          shape.stroke = "#d8f3f0";
+          shape.strokeWidth = 3;
+          return;
+        }
+
+        shape.stroke = null;
+        shape.strokeWidth = 0;
+      }
+
+      function selecionarPrimeiroNo() {
+        const primeiro = myDiagram.model.nodeDataArray[0] || null;
+        preencherFormulario(primeiro);
+        atualizarCard(primeiro);
+      }
+
+      function carregarModeloSelecionado() {
+        const base = criarModeloBase(modelos.grande);
+        myDiagram.model = new go.TreeModel(base);
+        nextKey = myDiagram.model.nodeDataArray.reduce(function(maior, item) {
+          return Math.max(maior, item.key);
+        }, 0) + 1;
+        selecionarPrimeiroNo();
+      }
+
+      myDiagram.nodeTemplate =
+        $(go.Node, "Auto",
+          {
+            selectionAdorned: false,
+            mouseEnter: function(e, node) {
+              node.isHighlighted = true;
+              aplicarEstadoNo(node);
+            },
+            mouseLeave: function(e, node) {
+              node.isHighlighted = false;
+              aplicarEstadoNo(node);
+            },
+            selectionChanged: function(node) {
+              aplicarEstadoNo(node);
+            }
+          },
+          $(go.Shape, "RoundedRectangle",
+            {
+              name: "SHAPE",
+              stroke: null
+            },
+            new go.Binding("parameter1", "level", function(level) {
+              return estiloPorNivel(level).radius;
+            }),
+            new go.Binding("fill", "level", function(level) {
+              return estiloPorNivel(level).fill;
+            }),
+            new go.Binding("width", "level", function(level) {
+              return estiloPorNivel(level).width;
+            }),
+            new go.Binding("height", "level", function(level) {
+              return estiloPorNivel(level).height;
+            })
+          ),
+          $(go.Panel, "Vertical",
+            {
+              margin: 8,
+              defaultAlignment: go.Spot.Center
+            },
+            $(go.TextBlock,
+              {
+                stroke: "#e8fffb",
+                textAlign: "center",
+                wrap: go.TextBlock.WrapFit,
+                maxLines: 3
+              },
+              new go.Binding("text", "name", function(name) {
+                return name || "Sem nome";
+              }),
+              new go.Binding("font", "level", function(level) {
+                return estiloPorNivel(level).fontNome;
+              }),
+              new go.Binding("width", "level", function(level) {
+                return estiloPorNivel(level).width - 26;
+              })
+            ),
+            $(go.TextBlock,
+              {
+                margin: new go.Margin(4, 0, 0, 0),
+                stroke: "#ffffff",
+                textAlign: "center",
+                wrap: go.TextBlock.WrapFit,
+                maxLines: 3
+              },
+              new go.Binding("text", "cargo", function(cargo) {
+                return cargo || "Preencher cargo";
+              }),
+              new go.Binding("font", "level", function(level) {
+                return estiloPorNivel(level).fontCargo;
+              }),
+              new go.Binding("width", "level", function(level) {
+                return estiloPorNivel(level).width - 26;
+              })
+            )
+          ),
+          {
+            click: function(e, node) {
+              myDiagram.select(node);
+              preencherFormulario(node.data);
+              atualizarCard(node.data);
+            }
+          }
+        );
+
+      myDiagram.linkTemplate =
+        $(go.Link,
+          {
+            routing: go.Link.Orthogonal,
+            corner: 0,
+            selectable: false
+          },
+          $(go.Shape, { stroke: "#007e8a", strokeWidth: 3 })
+        );
+
+      myDiagram.addDiagramListener("BackgroundSingleClicked", function() {
+        myDiagram.clearSelection();
+        card.style.display = "none";
+      });
+
+      document.getElementById("novoNoBtn").addEventListener("click", function() {
+        let novoNivel = 0;
+        if (selectedKey !== null) {
+          const paiSelecionado = myDiagram.model.findNodeDataForKey(selectedKey);
+          const nivelPai = paiSelecionado && typeof paiSelecionado.level === "number" ? paiSelecionado.level : 0;
+          novoNivel = Math.min(nivelPai + 1, 3);
+        }
+
+        const novoNo = {
+          key: nextKey++,
+          parent: selectedKey === null ? undefined : selectedKey,
+          level: novoNivel,
+          name: "",
+          cargo: "",
+          secao: "",
+          departamento: ""
+        };
+
+        myDiagram.startTransaction("novo no");
+        myDiagram.model.addNodeData(novoNo);
+        myDiagram.commitTransaction("novo no");
+
+        preencherFormulario(novoNo);
+        atualizarCard(novoNo);
+      });
+
+      document.getElementById("removerNoBtn").addEventListener("click", function() {
+        if (selectedKey === null) {
+          return;
+        }
+
+        const node = myDiagram.findNodeForKey(selectedKey);
+        if (!node) {
+          return;
+        }
+
+        if (node.findTreeChildrenNodes().count > 0) {
+          mostrarModal("Remova ou reorganize primeiro os cargos abaixo deste item.");
+          return;
+        }
+
+        myDiagram.startTransaction("remover no");
+        myDiagram.model.removeNodeData(node.data);
+        myDiagram.commitTransaction("remover no");
+
+        selecionarPrimeiroNo();
+      });
+
+      document.getElementById("baixarBtn").addEventListener("click", function() {
+        const imgData = myDiagram.makeImageData({
+          background: "white",
+          scale: 1,
+          padding: new go.Margin(60, 60, 60, 60)
+        });
+        const link = document.createElement("a");
+        link.href = imgData;
+        link.download = "organograma.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+
+      modalOkBtn.addEventListener("click", fecharModal);
+      modalOverlay.addEventListener("click", function(event) {
+        if (event.target === modalOverlay) {
+          fecharModal();
+        }
+      });
+
+      carregarModeloSelecionado();
+    }
+
+    init();
+  </script>
+</body>
+</html>
