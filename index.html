@@ -314,13 +314,13 @@
     <h1>ORGANOGRAMA CORPORATIVO</h1>
   </header>
 
-  <div id="organograma"></div>
-
   <div class="acoes">
     <button id="novoNoBtn" class="acao-btn">Adicionar Cargo</button>
     <button id="removerNoBtn" class="acao-btn">Remover Cargo</button>
     <button id="baixarBtn" class="acao-btn">Baixar Organograma</button>
   </div>
+
+  <div id="organograma"></div>
   <div id="card" class="card"></div>
   <div id="modalOverlay" class="modal-overlay">
     <div class="modal">
@@ -501,7 +501,7 @@
       function selecionarPrimeiroNo() {
         const primeiro = myDiagram.model.nodeDataArray[0] || null;
         preencherFormulario(primeiro);
-        atualizarCard(primeiro);
+        card.style.display = "none";
       }
 
       function carregarModeloSelecionado() {
