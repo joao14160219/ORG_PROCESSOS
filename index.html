@@ -38,6 +38,12 @@
       text-align: center;
     }
 
+    .header-acoes {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     #organograma {
       width: 90%;
       height: 600px;
@@ -322,12 +328,14 @@
   <header>
     <img src="imagem (1).png" alt="Logo da Empresa">
     <h1>ORGANOGRAMA CORPORATIVO</h1>
+    <div class="header-acoes">
+      <button id="baixarBtn" class="acao-btn">Baixar Organograma</button>
+    </div>
   </header>
 
   <div class="acoes">
     <button id="novoNoBtn" class="acao-btn">Adicionar Cargo</button>
     <button id="removerNoBtn" class="acao-btn">Remover Cargo</button>
-    <button id="baixarBtn" class="acao-btn">Baixar Organograma</button>
   </div>
 
   <div id="organograma"></div>
