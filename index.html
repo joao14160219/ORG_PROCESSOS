@@ -310,7 +310,7 @@
 </head>
 <body>
   <header>
-    <img src="logo-verzani1.png" alt="Logo da Empresa">
+    <img src="imagem (1).png" alt="Logo da Empresa">
     <h1>ORGANOGRAMA CORPORATIVO</h1>
   </header>
 
@@ -394,7 +394,6 @@
         myDiagram.startTransaction("editar no");
         myDiagram.model.setDataProperty(nodeData, "name", novosDados.name.trim());
         myDiagram.model.setDataProperty(nodeData, "cargo", novosDados.cargo.trim());
-        myDiagram.model.setDataProperty(nodeData, "secao", novosDados.secao.trim());
         myDiagram.model.setDataProperty(nodeData, "departamento", novosDados.departamento.trim());
         myDiagram.commitTransaction("editar no");
       }
@@ -411,7 +410,6 @@
           '<div class="card-grid">' +
           '<div class="card-item"><span class="card-label">Nome</span>' + (cardEditando ? '<input id="cardNomeInput" class="card-input" type="text" value="' + (data.name || "") + '">' : '<span class="card-valor">' + (data.name || "Nao informado") + '</span>') + '</div>' +
           '<div class="card-item"><span class="card-label">Cargo</span>' + (cardEditando ? '<input id="cardCargoInput" class="card-input" type="text" value="' + (data.cargo || "") + '">' : '<span class="card-valor">' + (data.cargo || "Nao informado") + '</span>') + '</div>' +
-          '<div class="card-item"><span class="card-label">Secao</span>' + (cardEditando ? '<input id="cardSecaoInput" class="card-input" type="text" value="' + (data.secao || "") + '">' : '<span class="card-valor">' + (data.secao || "Nao informada") + '</span>') + '</div>' +
           '<div class="card-item"><span class="card-label">Departamento</span>' + (cardEditando ? '<input id="cardDepartamentoInput" class="card-input" type="text" value="' + (data.departamento || "") + '">' : '<span class="card-valor">' + (data.departamento || "Nao informado") + '</span>') + '</div>' +
           '</div>';
 
@@ -433,7 +431,6 @@
           const novosDados = {
             name: document.getElementById("cardNomeInput") ? document.getElementById("cardNomeInput").value : nodeData.name,
             cargo: document.getElementById("cardCargoInput") ? document.getElementById("cardCargoInput").value : nodeData.cargo,
-            secao: document.getElementById("cardSecaoInput") ? document.getElementById("cardSecaoInput").value : nodeData.secao,
             departamento: document.getElementById("cardDepartamentoInput") ? document.getElementById("cardDepartamentoInput").value : nodeData.departamento
           };
 
